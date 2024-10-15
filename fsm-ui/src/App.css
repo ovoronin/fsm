@@ -1,0 +1,19 @@
+#root {
+  width: 600px;
+  height: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+form {
+  height: 100%;
+}
+
+.wizard {
+  height: 100%;
+}
