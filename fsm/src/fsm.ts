@@ -4,14 +4,29 @@ type StateChangeHandler<State> = (current: State, prev: State) => void;
 
 export class FSM<State extends number | string, Input extends number | string, Context> {
   // Current state
-  public state: State;
+  private _state!: State;
   // State chagne handler callback function
   private onStateChangeHandler?: StateChangeHandler<State>;
   // Guard context
-  public context: Partial<Context> | undefined;
+  private context: Partial<Context> | undefined;
+
+  // We can only get the current state
+  public get state() {
+    return this._state;
+  }
+  // We cannot set the current state from outside
+  private set state(nextState: State) {
+    this._state = nextState;
+  }
 
   constructor(private readonly config: FSMConfig<State, Input, Context>) {
-    this.state = config.initialState;
+    this.reset();
+  }
+
+  // Reset the machine to the initial state
+  public reset() {
+    this.state = this.config.initialState;
+    this.context = undefined;
   }
 
   public setContext(context: Partial<Context>) {

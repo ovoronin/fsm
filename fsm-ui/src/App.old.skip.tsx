@@ -90,7 +90,7 @@ function App() {
           </div>
           <Stack direction={'row'} alignItems={'center'} justifyContent='space-between' gap={10} sx={{ mt: 'auto' }}>
             <Button onClick={() => move(-1)} variant="outlined" color="secondary" disabled={step === 0}>Back</Button>
-            <Button onClick={handleSubmit} variant="contained" color="secondary" disabled={step !== 2}>Finish</Button>
+            <Button onClick={handleSubmit} variant="contained" color="secondary" disabled={step !== steps - 1}>Finish</Button>
             <Button onClick={() => move(1)} variant="outlined" color="secondary" disabled={step === steps - 1}>Next</Button>
           </Stack>
         </Stack>

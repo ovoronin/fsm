@@ -83,7 +83,15 @@ describe('FSM', () => {
     expect(fsm.state).toBe(TestStates.LOADING);
     expect(fsm.can(TestInputs.FETCH)).toBe(false);
     expect(fsm.can(TestInputs.SUCCESS)).toBe(true);
-
   });
+
+  it('should reset to initial state', () => {
+    fsm.input(TestInputs.FETCH);
+    expect(fsm.state).toBe(TestStates.LOADING);
+
+    fsm.reset();
+    expect(fsm.state).toBe(TestStates.INITIAL);
+  });
+
 
 })

@@ -5,7 +5,7 @@ const transitionsTable = [
   ['OPENING', 'Open sensor', 'OPEN'],
 ];
 function tableFSM(state, input) {
-  const next = transitionsTable.find(x => x[0] === state, x[1] === input)
+  const next = transitionsTable.find(x => x[0] === state && x[1] === input)
   return next ? next[2] : state;
 }
 
