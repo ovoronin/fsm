@@ -1,26 +1,51 @@
 import { FormEvent, useState } from 'react'
-import './App.css'
 import { Stack, TextField, Button, Checkbox, FormControlLabel } from '@mui/material'
-import { documentMachine } from './document.simple.machine';
-import { useMachine } from '@xstate/react';
+import { useFSM } from '../../../fsm/src/useFSM';
+import { FSMConfig } from '../../../fsm/src/fsm.model';
 
-function App() {
+type WizardPage = 'GENERAL' | 'APPROVAL' | 'LOCATION';
+type WizardInput = 'NEXT' | 'BACK';
+type WizardContext = {
+  approval?: boolean;
+}
+
+function approvalGuard(context?: Partial<WizardContext>) {
+  return !!context?.approval
+}
+
+const wizardConfig: FSMConfig<WizardPage, WizardInput, WizardContext> = {
+  initialState: 'GENERAL',
+  transitions: {
+    'GENERAL': {
+      'NEXT': [
+        { state: 'APPROVAL', guard: approvalGuard },
+        'LOCATION',
+      ]
+    },
+    'APPROVAL': {
+      'NEXT': 'LOCATION',
+      'BACK': 'GENERAL'
+    },
+    'LOCATION': {
+      'BACK': [
+        { state: 'APPROVAL', guard: approvalGuard },
+        'GENERAL'
+      ]
+    }
+  }
+}
+
+export function WizardFsmSkipGuards() {
   const [title, setTitle] = useState('')
   const [approval, setApproval] = useState(true)
   const [approvedByFName, setApprovedByFName] = useState('')
   const [approvedByLName, setApprovedByLName] = useState('')
   const [storageRoom, setStorageRoom] = useState('')
-  const [state, send] = useMachine(documentMachine)
+  const { fsm, state } = useFSM(wizardConfig, ['approval'], [approval]);
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     console.log(title, approval, approvedByFName)
-  }
-
-  function handleSetApproval(event: FormEvent) {
-    const checked = (event.target as HTMLInputElement).checked;
-    setApproval(checked);
-    send({ type: 'APPROVE', approval: checked });
   }
 
   return (
@@ -28,7 +53,7 @@ function App() {
       <h2>Document Wizard</h2>
       <form>
         <Stack className="wizard" direction={'column'}>
-          <div className={state.value === 'GENERAL' ? '' : 'hidden'}>
+          <div className={state === 'GENERAL' ? '' : 'hidden'}>
             <h3>General Info</h3>
             <TextField
               type="text"
@@ -44,12 +69,12 @@ function App() {
               control={
                 <Checkbox
                   checked={approval}
-                  onChange={handleSetApproval}
+                  onChange={e => setApproval(e.target.checked)}
                 />
               }
             />
           </div>
-          <div className={state.value === 'APPROVAL' ? '' : 'hidden'}>
+          <div className={state === 'APPROVAL' ? '' : 'hidden'}>
             <h3>Approved by</h3>
             <TextField
               type="text"
@@ -70,7 +95,7 @@ function App() {
               sx={{ mb: 4 }}
             />
           </div>
-          <div className={state.value === 'LOCATION' ? '' : 'hidden'}>
+          <div className={state === 'LOCATION' ? '' : 'hidden'}>
             <h3>Location</h3>
             <TextField
               type="text"
@@ -83,14 +108,12 @@ function App() {
             />
           </div>
           <Stack direction={'row'} alignItems={'center'} justifyContent='space-between' gap={10} sx={{ mt: 'auto' }}>
-            <Button onClick={() => send({ type: 'BACK'})} variant="outlined" color="secondary" disabled={!state.can({ type: 'BACK'})}>Back</Button>
-            <Button onClick={handleSubmit} variant="contained" color="secondary" disabled={state.can({ type: 'NEXT'})}>Finish</Button>
-            <Button onClick={() => send({ type: 'NEXT'})} variant="outlined" color="secondary" disabled={!state.can({ type: 'NEXT'})}>Next</Button>
+            <Button onClick={() => fsm?.input('BACK')} variant="outlined" color="secondary" disabled={!fsm?.can('BACK')}>Back</Button>
+            <Button onClick={handleSubmit} variant="contained" color="secondary" disabled={fsm?.can('NEXT')}>Finish</Button>
+            <Button onClick={() => fsm?.input('NEXT')} variant="outlined" color="secondary" disabled={!fsm?.can('NEXT')}>Next</Button>
           </Stack>
         </Stack>
       </form>
     </>
   )
 }
-
-export default App

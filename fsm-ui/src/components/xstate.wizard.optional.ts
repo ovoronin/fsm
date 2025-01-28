@@ -12,10 +12,6 @@ export const documentMachine = setup({
         approval: boolean;
       }
       | {
-        type: 'PAPER';
-        paper: boolean;
-      }
-      | {
         type: 'OPTIONAL';
       }
       | {
@@ -44,21 +40,12 @@ export const documentMachine = setup({
             target: 'APPROVAL',
             guard: 'needsApproval'
           },
-          {
-            target: 'UPLOAD',
-            guard: 'eDocument'
-          },
           'LOCATION'
         ],
         OPTIONAL: 'OPTIONAL',
         APPROVE: {
           actions: assign({
             approval: ({ event }) => event.approval
-          })
-        },
-        PAPER: {
-          actions: assign({
-            paper: ({ event }) => event.paper
           })
         },
       }
@@ -71,13 +58,7 @@ export const documentMachine = setup({
     },
     APPROVAL: {
       on: {
-        NEXT: [
-          {
-            target: 'UPLOAD',
-            guard: 'eDocument'
-          },
-          'LOCATION',
-        ],
+        NEXT: 'LOCATION',
         BACK: 'GENERAL',
       }
     },

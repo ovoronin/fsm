@@ -1,8 +1,7 @@
 import { FormEvent, useState } from 'react'
-import './App.css'
 import { Stack, TextField, Button, Checkbox, FormControlLabel } from '@mui/material'
 
-function App() {
+export function WizardOld() {
   const steps = 3;
   const [step, setStep] = useState(0);
 
@@ -90,5 +89,3 @@ function App() {
     </>
   )
 }
-
-export default App

@@ -38,7 +38,7 @@ export class FSM<State extends number | string, Input extends number | string, C
     this.onStateChangeHandler = handler;
   }
 
-  // Calculate the next state and output given the input inp
+  // Calculate the next state given the input inp
   // returns undefined if it isn't possible
   private nextEvent(inp: Input): FSMEvent<State> | undefined {
     const transitionsFromCurrentState = this.config.transitions[this.state];
