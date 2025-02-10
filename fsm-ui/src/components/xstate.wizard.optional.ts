@@ -15,9 +15,6 @@ export const documentMachine = setup({
         type: 'OPTIONAL';
       }
       | {
-        type: 'CLOSE';
-      }
-      | {
         type: 'BACK';
       }
   },
@@ -73,16 +70,5 @@ export const documentMachine = setup({
         ]
       }
     },
-    UPLOAD: {
-      on: {
-        BACK: [
-          {
-            target: 'APPROVAL',
-            guard: 'needsApproval'
-          },
-          'GENERAL'
-        ]
-      }
-    }
   },
 });
